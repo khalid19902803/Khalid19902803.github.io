@@ -188,3 +188,110 @@
   </script>
 </body>
 </html>
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="welcome-screen">
+      <div class="logo">
+        <img src="logo.png" alt="ZoneGay Logo">
+      </div>
+      <h2>¡Bienvenido a ZoneGay!</h2>
+      <input type="text" id="username" placeholder="Tu nombre">
+      <button onclick="startChat()">Entrar al chat</button>
+    </div><div class="chat-wrapper" style="display:none">
+  <div class="user-list" id="userList"></div>
+  <div class="chat-container">
+    <div id="chat"></div>
+    <div class="input-area">
+      <input type="text" id="message" placeholder="Escribe tu mensaje...">
+      <button class="send" onclick="sendMessage()">Enviar</button>
+      <button class="record" onclick="recordAudio()">Audio</button>
+    </div>
+    <div class="private-chat-container" id="privateChats"></div>
+  </div>
+</div>
+
+  </div>  <script>
+    const welcomeScreen = document.querySelector('.welcome-screen');
+    const chatWrapper = document.querySelector('.chat-wrapper');
+    const chatBox = document.getElementById('chat');
+    const userList = document.getElementById('userList');
+    const privateChats = document.getElementById('privateChats');
+    let username = "";
+
+    function startChat() {
+      username = document.getElementById('username').value.trim();
+      if (!username) return alert("Pon tu nombre");
+      welcomeScreen.style.display = 'none';
+      chatWrapper.style.display = 'flex';
+      loadUsers();
+    }
+
+    function sendMessage() {
+      const input = document.getElementById('message');
+      const text = input.value.trim();
+      if (!text) return;
+      const message = document.createElement('div');
+      message.className = 'message';
+      message.innerHTML = `<div class="content"><strong>${username}</strong><br>${text}</div>`;
+      chatBox.appendChild(message);
+      input.value = '';
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function recordAudio() {
+      alert("Grabación de audio próximamente");
+    }
+
+    function loadUsers() {
+      const fakeUsers = ["Leo", "Juan", "Álvaro", "Nico", "Alex", "Mario"];
+      const allUsers = [{ name: username }, ...fakeUsers.map(name => ({ name }))];
+      userList.innerHTML = '<h4>Conectados</h4>';
+      allUsers.forEach(user => {
+        const avatarSeed = encodeURIComponent(user.name);
+        const div = document.createElement('div');
+        div.className = 'user';
+        div.onclick = () => openPrivateChat(user.name);
+        div.innerHTML = `
+          <img src="https://api.dicebear.com/6.x/lorelei/svg?seed=${avatarSeed}">
+          <span>${user.name}</span>
+        `;
+        userList.appendChild(div);
+      });
+    }
+
+    function openPrivateChat(target) {
+      if (target === username) return;
+      let existing = document.getElementById(`chat-${target}`);
+      if (!existing) {
+        const chatBox = document.createElement('div');
+        chatBox.className = 'private-chat-box';
+        chatBox.id = `chat-${target}`;
+        chatBox.innerHTML = `
+          <h4>Chat con ${target}</h4>
+          <div class="private-chat" id="private-messages-${target}"></div>
+          <div class="input-area">
+            <input type="text" id="input-${target}" placeholder="Mensaje privado...">
+            <button class="send" onclick="sendPrivateMessage('${target}')">Enviar</button>
+          </div>
+        `;
+        privateChats.appendChild(chatBox);
+      }
+    }
+
+    function sendPrivateMessage(target) {
+      const input = document.getElementById(`input-${target}`);
+      const text = input.value.trim();
+      if (!text) return;
+      const container = document.getElementById(`private-messages-${target}`);
+      const msg = document.createElement('div');
+      msg.className = 'message';
+      msg.innerHTML = `<div class="content"><strong>${username}</strong><br>${text}</div>`;
+      container.appendChild(msg);
+      input.value = '';
+      container.scrollTop = container.scrollHeight;
+    }
+  </script></body>
+</html>
