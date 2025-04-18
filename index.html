@@ -1,4 +1,12 @@
-<!DOCTYPE html>
+<div id="login-screen">
+  <h2>Bienvenido a ZoneGay</h2>
+  <input type="text" id="username" placeholder="Escribe tu nombre">
+  <button onclick="startChat()">Entrar al chat</button>
+</div>
+
+<div id="chat-container" style="display: none;">
+  <!-- Todo el chat va aquí -->
+</div><!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
@@ -295,3 +303,16 @@
     }
   </script></body>
 </html>
+function startChat() {
+  const name = document.getElementById('username').value.trim();
+  if (name) {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('chat-container').style.display = 'flex';
+    // Opcional: mostrar el nombre del usuario en el chat
+    const userList = document.getElementById('user-list');
+    const div = document.createElement('div');
+    div.className = 'user';
+    div.innerHTML = `<img src="https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${name}" alt="${name}"><div>${name}</div>`;
+    userList.appendChild(div);
+  }
+}
