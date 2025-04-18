@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZoneGay Chat</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="chat-container">
+    <header>
+      <h1>ZoneGay</h1>
+    </header>
+
+    <div id="user-list">
+      <!-- Usuarios conectados -->
+    </div>
+
+    <div id="chat-box">
+      <!-- Mensajes del chat -->
+    </div>
+
+    <form id="message-form">
+      <input type="text" id="message-input" placeholder="Escribe algo sexy...">
+      <button type="submit">Enviar</button>
+    </form>
+
+    <button id="record-btn">Grabar audio</button>
+    <audio id="audio-preview" controls hidden></audio>
+    <button id="send-audio" hidden>Enviar audio</button>
+    <button id="cancel-audio" hidden>Cancelar</button>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
