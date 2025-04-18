@@ -5,19 +5,102 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ZoneGay Chat</title>
   <link rel="stylesheet" href="styles.css">
+  <style>
+    /* Estilos rápidos tipo Grindr colorido */
+    body {
+      margin: 0;
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(to bottom right, #ff8a00, #e52e71);
+      color: #fff;
+    }
+    header {
+      background: rgba(0, 0, 0, 0.6);
+      padding: 10px;
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+    }
+    #chat-container {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+    #user-list {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 5px;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+    .user {
+      display: inline-block;
+      margin-right: 10px;
+      text-align: center;
+    }
+    .user img {
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      border: 2px solid #fff;
+    }
+    #chat-box {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px;
+    }
+    .message {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 10px;
+      max-width: 80%;
+    }
+    .me {
+      align-self: flex-end;
+      background: rgba(0, 0, 0, 0.4);
+    }
+    form {
+      display: flex;
+      padding: 10px;
+      background: rgba(0, 0, 0, 0.6);
+    }
+    form input {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 10px;
+    }
+    form button {
+      background: #fff;
+      border: none;
+      padding: 10px;
+      margin-left: 5px;
+      border-radius: 10px;
+      font-weight: bold;
+    }
+    #audio-preview {
+      width: 100%;
+      margin: 5px 0;
+    }
+  </style>
 </head>
 <body>
   <div id="chat-container">
-    <header>
-      <h1>ZoneGay</h1>
-    </header>
+    <header>ZoneGay</header>
 
     <div id="user-list">
-      <!-- Usuarios conectados -->
+      <!-- Avatares automáticos -->
+      <div class="user">
+        <img src="https://api.dicebear.com/7.x/bottts-neutral/svg?seed=User1" alt="User1">
+        <div>User1</div>
+      </div>
+      <div class="user">
+        <img src="https://api.dicebear.com/7.x/bottts-neutral/svg?seed=User2" alt="User2">
+        <div>User2</div>
+      </div>
     </div>
 
     <div id="chat-box">
-      <!-- Mensajes del chat -->
+      <!-- Mensajes -->
     </div>
 
     <form id="message-form">
@@ -25,12 +108,83 @@
       <button type="submit">Enviar</button>
     </form>
 
-    <button id="record-btn">Grabar audio</button>
+    <button id="record-btn">🎙️ Grabar Audio</button>
     <audio id="audio-preview" controls hidden></audio>
-    <button id="send-audio" hidden>Enviar audio</button>
+    <button id="send-audio" hidden>Enviar Audio</button>
     <button id="cancel-audio" hidden>Cancelar</button>
   </div>
 
-  <script src="app.js"></script>
+  <script>
+    const chatBox = document.getElementById('chat-box');
+    const form = document.getElementById('message-form');
+    const input = document.getElementById('message-input');
+    const sound = new Audio('https://notificationsounds.com/storage/sounds/file-sounds-1153-pristine.mp3');
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const msg = input.value.trim();
+      if (msg) {
+        const div = document.createElement('div');
+        div.className = 'message me';
+        div.textContent = msg;
+        chatBox.appendChild(div);
+        input.value = '';
+        chatBox.scrollTop = chatBox.scrollHeight;
+        sound.play();
+      }
+    });
+
+    // Grabación de audio
+    let mediaRecorder, audioChunks = [];
+
+    const recordBtn = document.getElementById('record-btn');
+    const audioPreview = document.getElementById('audio-preview');
+    const sendAudioBtn = document.getElementById('send-audio');
+    const cancelAudioBtn = document.getElementById('cancel-audio');
+
+    recordBtn.addEventListener('click', async () => {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaRecorder = new MediaRecorder(stream);
+      audioChunks = [];
+
+      mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+      mediaRecorder.onstop = () => {
+        const audioBlob = new Blob(audioChunks);
+        const audioUrl = URL.createObjectURL(audioBlob);
+        audioPreview.src = audioUrl;
+        audioPreview.hidden = false;
+        sendAudioBtn.hidden = false;
+        cancelAudioBtn.hidden = false;
+      };
+
+      mediaRecorder.start();
+      recordBtn.textContent = 'Grabando...';
+      setTimeout(() => {
+        mediaRecorder.stop();
+        recordBtn.textContent = '🎙️ Grabar Audio';
+      }, 5000); // Máximo 5 segundos
+    });
+
+    sendAudioBtn.addEventListener('click', () => {
+      const div = document.createElement('div');
+      div.className = 'message me';
+      const audio = document.createElement('audio');
+      audio.controls = true;
+      audio.src = audioPreview.src;
+      div.appendChild(audio);
+      chatBox.appendChild(div);
+      chatBox.scrollTop = chatBox.scrollHeight;
+      audioPreview.hidden = true;
+      sendAudioBtn.hidden = true;
+      cancelAudioBtn.hidden = true;
+      sound.play();
+    });
+
+    cancelAudioBtn.addEventListener('click', () => {
+      audioPreview.hidden = true;
+      sendAudioBtn.hidden = true;
+      cancelAudioBtn.hidden = true;
+    });
+  </script>
 </body>
 </html>
